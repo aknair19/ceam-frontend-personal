@@ -292,6 +292,22 @@ function EmployeeMaster() {
       },
     },
     {
+      name: "blacklistEmployee",
+      label: "Blacklisted",
+      options: {
+        filter: true,
+        sort: false,
+        customBodyRenderLite: (dataIndex, rowIndex) => {
+          //console.log(dataIndex);
+          return (
+            <div>
+              {empData[dataIndex]?.blacklistEmployee === "True" ? "yes" : "no"}
+            </div>
+          );
+        },
+      },
+    },
+    {
       name: "frt_verify_flag",
       label: "FRT Verified",
       options: {
@@ -440,6 +456,7 @@ function EmployeeMaster() {
           );
         } else {
           setEmpData(res?.data?.data);
+          console.log(res?.data?.data);
         }
         // setEmpData(res.data.data);
         if (res.data.data.length) {

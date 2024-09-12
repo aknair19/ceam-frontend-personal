@@ -1,4 +1,15 @@
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
 import "./index.css";
 import { SlInput } from "@shoelace-style/shoelace";
@@ -6,28 +17,9 @@ import axios from "axios";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { colors } from "@mui/material";
+import { blacklistHeaders } from "../../utils/constants";
 
 const BlacklistEmployee = () => {
-  // const [verifyAadhar, setVerifyAadhar] = useState("");
-  // const [verifyAadharBtn, setVerifyAadharBtn] = useState("");
-  // const [verifyAadharData, setVerifyAadharData] = useState({});
-  // const verifyAadharHandler = async () => {
-  //   try {
-  //     setVerifyAadharBtn(true);
-  //     const data = await axios.post(
-  //       `${import.meta.env.VITE_TEST_URL}/mhere/get-employee-by-aadhar`,
-  //       {
-  //         aadhar_card_number: verifyAadhar,
-  //       }
-  //     );
-  //     setVerifyAadharData(data?.data);
-  //     console.log(data?.data);
-  //     setVerifyAadharBtn(false);
-  //   } catch (err) {
-  //     console.log(err);
-  //     setVerifyAadharBtn(false);
-  //   }
-  // };
   const fetchAadharData = async (aadharCardNumber) => {
     const response = await axios.post(
       `${import.meta.env.VITE_TEST_URL}/mhere/get-employee-by-aadhar`,
@@ -40,7 +32,7 @@ const BlacklistEmployee = () => {
   const { mutate, isLoading, data, error } = useMutation({
     mutationFn: fetchAadharData,
     onSuccess: (data) => {
-      setVerifyAadharData(data);
+      setVerifyAadharData(data?.data);
       console.log(data);
       toast.success(data?.message);
     },
@@ -52,6 +44,33 @@ const BlacklistEmployee = () => {
   const verifyAadharHandler = () => {
     mutate(verifyAadhar);
   };
+  // console.log(verifyAadharData);
+  const rows = [
+    verifyAadharData?.employee_id,
+    verifyAadharData?.employee_name,
+    verifyAadharData?.vendor_code,
+    verifyAadharData?.vendor_name,
+    verifyAadharData?.gender == "M" ? "Male" : "Female",
+    verifyAadharData?.base_location,
+    verifyAadharData?.mobile_number,
+    verifyAadharData?.DOL,
+    verifyAadharData?.blacklistEmployee == 1 ? "Yes" : "No",
+    verifyAadharData?.reason,
+  ];
+
+  const blacklistEMployeeHandler = async () => {
+    try {
+      const data = await axios.post(
+        `${import.meta.env.VITE_TEST_URL}/mhere/making-blacklist-employee`,
+        {
+          employee_id: verifyAadharData?.employee_id,
+        }
+      );
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="main">
       <div className="blacklist-main">
@@ -63,12 +82,6 @@ const BlacklistEmployee = () => {
             alignItems: "center",
           }}
         >
-          {/* <SlInput
-            placeholder="Enter Aadhar number"
-            label="Employee Status"
-            value={verifyAadhar}
-            onSlChange={(e) => setVerifyAadhar(e.target.value)}
-          /> */}
           <TextField
             id="standard-multiline-flexible"
             placeholder="Enter Aadhar number"
@@ -102,14 +115,55 @@ const BlacklistEmployee = () => {
               {isLoading ? "Verifying..." : "Verify Aadhar"}
             </Button>
           )}
+
           {error && <p>Error: {error.message}</p>}
         </Box>
       </div>
-      <pre>
+      {/* <pre>
         {verifyAadharData && (
           <pre>{JSON.stringify(verifyAadharData, null, 2)}</pre>
         )}
-      </pre>
+      </pre> */}
+      {verifyAadharData && (
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                {blacklistHeaders?.map((header) => (
+                  <TableCell key={header}>{header}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                {rows?.map((row, i) => (
+                  <TableCell
+                    style={{ maxWidth: 150 }}
+                    component="th"
+                    scope="row"
+                    key={i}
+                  >
+                    {row}
+                  </TableCell>
+                ))}
+                <Button
+                  variant="contained"
+                  // color="error"
+                  sx={{ borderRadius: "100px", marginTop: "0.5rem" }}
+                  disabled={
+                    verifyAadharData?.blacklistEmployee == 1 ? true : false
+                  }
+                  onClick={blacklistEMployeeHandler}
+                >
+                  Ok
+                </Button>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 };

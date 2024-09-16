@@ -79,6 +79,7 @@ const BlacklistEmployee = () => {
       );
       setReason("");
       handleClose();
+      setVerifyAadharData("");
       toast.success(data.data.message);
     } catch (error) {
       toast.error(error.response.data.message);

@@ -1,6 +1,9 @@
 import {
+  Backdrop,
   Box,
   Button,
+  Fade,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -17,18 +20,24 @@ import axios from "axios";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { colors } from "@mui/material";
-import { blacklistHeaders } from "../../utils/constants";
-
+import { blacklistHeaders, modalStyle } from "../../utils/constants";
+import Typography from "@mui/material/Typography";
+import { TextareaAutosize } from "@mui/material";
 const BlacklistEmployee = () => {
   const fetchAadharData = async (aadharCardNumber) => {
     const response = await axios.post(
-      `${import.meta.env.VITE_TEST_URL}/mhere/get-employee-by-aadhar`,
+      `${import.meta.env.VITE_API_URL}/mhere/get-employee-by-aadhar`,
       { aadhar_card_number: aadharCardNumber }
     );
     return response.data;
   };
   const [verifyAadhar, setVerifyAadhar] = useState("");
   const [verifyAadharData, setVerifyAadharData] = useState(null);
+  const [reason, setReason] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const { mutate, isLoading, data, error } = useMutation({
     mutationFn: fetchAadharData,
     onSuccess: (data) => {
@@ -61,11 +70,16 @@ const BlacklistEmployee = () => {
   const blacklistEMployeeHandler = async () => {
     try {
       const data = await axios.post(
-        `${import.meta.env.VITE_TEST_URL}/mhere/making-blacklist-employee`,
+        `${import.meta.env.VITE_API_URL}/mhere/making-blacklist-employee`,
         {
+          reason,
           employee_id: verifyAadharData?.employee_id,
+          blacklisted_by: localStorage.getItem("employee_id"),
         }
       );
+      setReason("");
+      handleClose();
+      toast.success(data.data.message);
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -148,22 +162,79 @@ const BlacklistEmployee = () => {
                     {row}
                   </TableCell>
                 ))}
-                <Button
-                  variant="contained"
-                  // color="error"
-                  sx={{ borderRadius: "100px", marginTop: "0.5rem" }}
-                  disabled={
-                    verifyAadharData?.blacklistEmployee == 1 ? true : false
-                  }
-                  onClick={blacklistEMployeeHandler}
-                >
-                  Ok
-                </Button>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    // color="error"
+                    sx={{ borderRadius: "100px", marginTop: "0.5rem" }}
+                    disabled={
+                      verifyAadharData?.blacklistEmployee == 1 ? true : false
+                    }
+                    onClick={handleOpen}
+                  >
+                    Ok
+                  </Button>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
       )}
+
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={modalStyle}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Enter Details
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                marginTop: "1rem",
+              }}
+            >
+              <TextField
+                label="Done By"
+                value={localStorage.getItem("employee_id")}
+                disabled
+              />
+              <TextField
+                label="Employee id"
+                value={verifyAadharData?.employee_id}
+                disabled
+              />
+              <TextField
+                label="Enter Reason"
+                value={reason}
+                placeholder="Reason should be more than 5 characters"
+                onChange={(e) => setReason(e.target.value)}
+              />
+              <Button
+                variant="contained"
+                onClick={blacklistEMployeeHandler}
+                sx={{ borderRadius: "100px", marginTop: "0.5rem" }}
+                disabled={reason?.length > 5 ? false : true}
+              >
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
     </div>
   );
 };

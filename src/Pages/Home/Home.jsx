@@ -39,6 +39,7 @@ function Home() {
           onClick={() => {
             navigate("/verify-employee");
           }}
+          style={{ pointerEvents: "none" }}
         >
           Blacklist Verify
         </div>

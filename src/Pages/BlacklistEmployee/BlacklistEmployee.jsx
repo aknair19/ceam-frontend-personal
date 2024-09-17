@@ -23,6 +23,7 @@ import { colors } from "@mui/material";
 import { blacklistHeaders, modalStyle } from "../../utils/constants";
 import Typography from "@mui/material/Typography";
 import { TextareaAutosize } from "@mui/material";
+import { useHref } from "react-router-dom";
 const BlacklistEmployee = () => {
   const fetchAadharData = async (aadharCardNumber) => {
     const response = await axios.post(
@@ -66,7 +67,31 @@ const BlacklistEmployee = () => {
     verifyAadharData?.blacklistEmployee == 1 ? "Yes" : "No",
     verifyAadharData?.reason,
   ];
+  const downloadBlacklistBulk = async () => {
+    try {
+      const response = await axios({
+        url: `${
+          import.meta.env.VITE_API_URL
+        }/mhere/download-blacklisted-employees`, // Replace with your API URL
+        method: "GET",
+        responseType: "blob", // Important: Set the response type to 'blob'
+      });
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
+      // Create a URL for the Blob and open it in a new tab
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, "_blank");
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Downloaded Successfully");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
   const blacklistEMployeeHandler = async () => {
     try {
       const data = await axios.post(
@@ -92,46 +117,51 @@ const BlacklistEmployee = () => {
         <Box
           sx={{
             display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
             gap: "10px",
             marginBottom: "10px",
             alignItems: "center",
           }}
         >
-          <TextField
-            id="standard-multiline-flexible"
-            placeholder="Enter Aadhar number"
-            label="Verify Employee Status"
-            onChange={(e) => setVerifyAadhar(e.target.value)}
-            value={verifyAadhar}
-            maxRows={4}
-            variant="standard"
-          />
+          <Box sx={{ display: "flex", gap: "10px" }}>
+            <TextField
+              id="standard-multiline-flexible"
+              placeholder="Enter Aadhar number"
+              label="Verify Employee Status"
+              onChange={(e) => setVerifyAadhar(e.target.value)}
+              value={verifyAadhar}
+              maxRows={4}
+              variant="standard"
+            />
 
-          {verifyAadharData ? (
-            <Button
-              variant="contained"
-              onClick={() => {
-                setVerifyAadharData(null);
-                setVerifyAadhar("");
-              }}
-              sx={{ marginTop: "1rem" }}
-              color="error"
-            >
-              Clear
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={verifyAadharHandler}
-              sx={{ marginTop: "1rem" }}
-              disabled={isLoading}
-              // disabled={verifyAadharBtn}
-            >
-              {isLoading ? "Verifying..." : "Verify Aadhar"}
-            </Button>
-          )}
-
+            {verifyAadharData ? (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setVerifyAadharData(null);
+                  setVerifyAadhar("");
+                }}
+                sx={{ marginTop: "1rem" }}
+                color="error"
+              >
+                Clear
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={verifyAadharHandler}
+                sx={{ marginTop: "1rem" }}
+                disabled={isLoading || verifyAadhar.length === 0}
+              >
+                {isLoading ? "Verifying..." : "Verify Aadhar"}
+              </Button>
+            )}
+          </Box>
           {error && <p>Error: {error.message}</p>}
+          <Button variant="contained" onClick={downloadBlacklistBulk}>
+            Download Blacklisted Employees Report
+          </Button>
         </Box>
       </div>
       {/* <pre>

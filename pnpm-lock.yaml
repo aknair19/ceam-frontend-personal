@@ -26,6 +26,9 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7
+      core-js:
+        specifier: ^3.38.1
+        version: 3.38.1
       mui-datatables:
         specifier: ^4.3.0
         version: 4.3.0(@emotion/react@11.11.1(@types/react@18.3.5)(react@18.3.1))(@mui/icons-material@5.14.16(@mui/material@5.16.7(@emotion/react@11.11.1(@types/react@18.3.5)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.11.1(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.5)(react@18.3.1))(@mui/material@5.16.7(@emotion/react@11.11.1(@types/react@18.3.5)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.11.1(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -33,7 +36,7 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       react-query:
         specifier: ^3.39.3
@@ -713,6 +716,9 @@ packages:
 
   core-js-pure@3.38.1:
     resolution: {integrity: sha512-BY8Etc1FZqdw1glX0XNOq2FDwfrg/VGqoZOZCdaL+UmdaqDwQwYXkMJT4t6In+zfEfOJDcM9T0KdbBeJg8KKCQ==}
+
+  core-js@3.38.1:
+    resolution: {integrity: sha512-OP35aUorbU3Zvlx7pjsFdu1rGNnD4pgw/CWoYzRY3t2EzoVT7shKHY1dlAy3f41cGIO7ZDPQimhGFTlEYkG/Hw==}
 
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -1915,6 +1921,8 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   core-js-pure@3.38.1: {}
+
+  core-js@3.38.1: {}
 
   core-util-is@1.0.3: {}
 
